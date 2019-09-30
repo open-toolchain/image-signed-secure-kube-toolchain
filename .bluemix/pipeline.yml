@@ -1,0 +1,368 @@
+---
+defaultBaseImageVersion: latest
+properties:
+- name: IBM_CLOUD_API_KEY
+  value: ${API_KEY}
+  type: secure
+- name: VAULT_INSTANCE
+  value: ${VAULT_INSTANCE}
+  type: text
+stages:
+- name: BUILD
+  inputs:
+  - type: git
+    branch: master
+    service: ${GIT_REPO}
+  triggers:
+  - type: commit
+  properties:
+  - name: IMAGE_NAME
+    value: ${APP_NAME}
+    type: text
+  - name: IBM_CLOUD_API_KEY
+    value: ${API_KEY}
+    type: secure
+  jobs:
+  - name: Fetch code
+    type: builder
+    artifact_dir: ''
+    build_type: shell
+    script: |+
+      #!/bin/bash
+      # set -x
+
+      # Git repo cloned at $WORKING_DIR, copy into $ARCHIVE_DIR
+      mkdir -p $ARCHIVE_DIR
+      cp -R -n ./ $ARCHIVE_DIR/ || true
+
+      # Record git info
+      echo "GIT_URL=${GIT_URL}" >> $ARCHIVE_DIR/build.properties
+      echo "GIT_BRANCH=${GIT_BRANCH}" >> $ARCHIVE_DIR/build.properties
+      echo "GIT_COMMIT=${GIT_COMMIT}" >> $ARCHIVE_DIR/build.properties
+      echo "SOURCE_BUILD_NUMBER=${BUILD_NUMBER}" >> $ARCHIVE_DIR/build.properties
+      cat $ARCHIVE_DIR/build.properties
+
+      # check if doi is integrated in this toolchain
+      if jq -e '.services[] | select(.service_id=="draservicebroker")' _toolchain.json; then
+        # Record build information
+        ibmcloud login --apikey ${IBM_CLOUD_API_KEY} --no-region
+        ibmcloud doi publishbuildrecord --branch ${GIT_BRANCH} --repositoryurl ${GIT_URL} --commitid ${GIT_COMMIT} \
+          --buildnumber ${BUILD_NUMBER} --logicalappname ${IMAGE_NAME} --status pass
+      fi
+  - name: Unit Tests
+    type: tester
+    script: |-
+      #!/bin/bash
+      # set -x
+      if [ -f ./tests/run-tests.sh ]; then
+        source ./tests/run-tests.sh
+        RESULT=$?
+        if [ ! -z "${FILE_LOCATION}"]; then
+          if [ ${RESULT} -ne 0 ]; then STATUS=fail; else STATUS=pass; fi
+            if jq -e '.services[] | select(.service_id=="draservicebroker")' _toolchain.json; then
+              ibmcloud login --apikey ${IBM_CLOUD_API_KEY} --no-region
+              ibmcloud doi publishtestrecord --type unittest --buildnumber ${BUILD_NUMBER} --filelocation ${FILE_LOCATION} \
+                --buildnumber ${BUILD_NUMBER} --logicalappname ${IMAGE_NAME} --status ${STATUS}
+            fi
+          exit $RESULT
+        fi
+      else
+        echo "Test runner script not found: ./tests/run-tests.sh"
+      fi
+- name: CONTAINERIZE
+  properties:
+  - name: buildprops
+    value: build.properties
+    type: file
+  - name: DOCKER_ROOT
+    value: .
+    type: text
+  - name: DOCKER_FILE
+    value: Dockerfile
+    type: text
+  - name: DOCKER_ROOT
+    value: .
+    type: text
+  - name: DOCKER_FILE
+    value: Dockerfile
+    type: text
+  - name: IBMCLOUD_TARGET_REGION
+    value: ${BUILD_REGION_ID}
+    type: text
+  - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+    value: ${BUILD_RESOURCE_GROUP}
+    type: text
+  - name: BUILD_CLUSTER
+    value: ${BUILD_CLUSTER_NAME}
+    type: text
+  - name: BUILD_CLUSTER_NAMESPACE
+    value: ${BUILD_CLUSTER_NAMESPACE}
+    type: text
+  - name: REGISTRY_REGION
+    value: ${REGISTRY_REGION_ID}
+    type: text
+  - name: REGISTRY_NAMESPACE
+    value: ${REGISTRY_NAMESPACE}
+    type: text
+  - name: DEVOPS_SIGNER
+    value: ${BUILD_SIGNER}
+    type: text
+  - name: IMAGE_NAME
+    value: ${APP_NAME}
+    type: text
+  - name: IBM_CLOUD_API_KEY
+    value: ${API_KEY}
+    type: secure
+  - name: PIPELINE_IMAGE_URL
+    value: undefined
+    type: text
+  inputs:
+  - type: job
+    stage: BUILD
+    job: Fetch code
+  triggers:
+  - type: stage
+  jobs:
+  - name: Check dockerfile
+    type: tester
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # copy the script below into your app code repo (e.g. ./scripts/check_dockerfile.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_prebuild.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh")
+      # ------------------
+      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh
+
+      # This script lints Dockerfile.
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh")
+  - name: Check registry
+    type: builder
+    build_type: cr
+    artifact_dir: ''
+    target:
+      region_id: ${REGISTRY_REGION_ID}
+      api_key: ${API_KEY}
+    namespace: ${REGISTRY_NAMESPACE}
+    image_name: ${APP_NAME}
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # copy the script below into your app code repo (e.g. ./scripts/check_registry.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_registry.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh")
+      # ------------------
+      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh
+
+      # This script checks presence of registry namespace.
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh")
+  - name: Build Signed Docker image
+    type: builder
+    curatedDockerImage: default
+    artifact_dir: ''
+    build_type: customimage
+    docker_image: jauninb/pbi-docker:latest
+    script: |
+      #!/bin/bash
+      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      # configure the container registry
+      REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
+      ibmcloud cr region-set $REGISTRY_REGION
+      # login docker to ibm container registry
+      ibmcloud cr login
+      # Initialize the REGISTRY_URL and DOCKER_CONTENT_TRUST_SERVER
+      export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+      export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
+
+      echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
+      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/signatures.sh")
+      # Restore repository pem key and signer pem key
+      VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "$IBMCLOUD_TARGET_REGION" "$IBMCLOUD_TARGET_RESOURCE_GROUP")
+      JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
+      signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
+      writeFile "$signerkey"
+      # Retrieve the signer passphrase
+      export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
+
+      export DCT_DISABLED=false
+      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/build_image_dind.sh")
+- name: VALIDATE
+  inputs:
+  - type: job
+    stage: CONTAINERIZE
+    job: Build Signed Docker image
+  triggers:
+  - type: stage
+  properties:
+  - name: buildprops
+    value: build.properties
+    type: file
+  - name: IBMCLOUD_TARGET_REGION
+    value: ${BUILD_REGION_ID}
+    type: text
+  - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+    value: ${BUILD_RESOURCE_GROUP}
+    type: text
+  - name: BUILD_CLUSTER
+    value: ${BUILD_CLUSTER_NAME}
+    type: text
+  - name: BUILD_CLUSTER_NAMESPACE
+    value: ${BUILD_CLUSTER_NAMESPACE}
+    type: text
+  - name: DEVOPS_SIGNER
+    value: ${VALIDATION_SIGNER}
+    type: text
+  jobs:
+  - name: Check vulnerabilities
+    type: tester
+    test_type: vulnerabilityadvisor
+    use_image_from_build_input: true
+    target:
+      region_id: ${REGISTRY_REGION_ID}
+      api_key: ${API_KEY}
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # Check for vulnerabilities of built image using Vulnerability Advisor
+      # PIPELINE_IMAGE_URL is defined because of tester type VA and use_image_from_build_input: true
+      # unset it in order to recompute using build.properties value
+      unset PIPELINE_IMAGE_URL
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_vulnerabilities.sh")
+  - name: Sign Image for Validation
+    type: tester
+    test_type: customimage
+    docker_image: jauninb/pbi-docker:latest
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # Sign the built image as validated
+      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      # configure the container registry
+      REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
+      ibmcloud cr region-set $REGISTRY_REGION
+      # login docker to ibm container registry
+      ibmcloud cr login
+      # Initialize the REGISTRY_URL and DOCKER_CONTENT_TRUST_SERVER
+      export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+      export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
+
+      
+      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/sign_image_with_vault_keys.sh")
+- name: DEPLOY
+  inputs:
+  - type: job
+    stage: CONTAINERIZE
+    job: Build Signed Docker image
+  triggers:
+  - type: stage
+  properties:
+  - name: buildprops
+    value: build.properties
+    type: file
+  - name: IBMCLOUD_TARGET_REGION
+    value: ${BUILD_REGION_ID}
+    type: text
+  - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+    value: ${BUILD_RESOURCE_GROUP}
+    type: text
+  - name: BUILD_CLUSTER
+    value: ${BUILD_CLUSTER_NAME}
+    type: text
+  - name: BUILD_CLUSTER_NAMESPACE
+    value: ${BUILD_CLUSTER_NAMESPACE}
+    type: text
+  - name: CLUSTER_NAMESPACE
+    value: ${PROD_CLUSTER_NAMESPACE}
+    type: text
+  - name: DEPLOYMENT_FILE
+    value: deployment.yml
+    type: text
+  - name: BUILD_SIGNER
+    value: ${BUILD_SIGNER}
+    type: text
+  - name: VALIDATION_SIGNER
+    value: ${VALIDATION_SIGNER}
+    type: text
+  - name: APP_URL
+    value: undefined
+    type: text
+  jobs:
+  - name: Signatures Pre-Check
+    type: tester
+    test_type: customimage
+    docker_image: jauninb/pbi-docker:latest
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # This script inspect the docker image signatures to ensure compliance
+      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      # configure the container registry
+      REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
+      ibmcloud cr region-set $REGISTRY_REGION
+      # login docker to ibm container registry
+      ibmcloud cr login
+      # configure DCT and inspect the image
+      export DOCKER_CONTENT_TRUST_SERVER=https://${REGISTRY_URL}:4443
+      docker trust inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} | tee _image_inspect.json
+
+      # Check if the Builder signature is present
+      if jq -e ".[] | select(.Name=\"$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG\") | .SignedTags[] | select(.SignedTag=\"$IMAGE_TAG\") | select (.Signers[] | contains(\"$BUILD_SIGNER\"))" _image_inspect.json; then
+        echo "Signature $BUILD_SIGNER found"
+      else
+        echo "Signature $BUILD_SIGNER not found"
+        exit 1
+      fi
+
+      # Check if the Validation signature is present
+      if jq -e ".[] | select(.Name=\"$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG\") | .SignedTags[] | select(.SignedTag=\"$IMAGE_TAG\") | select (.Signers[] | contains(\"$VALIDATION_SIGNER\"))" _image_inspect.json; then
+        echo "Signature $VALIDATION_SIGNER found"
+      else
+        echo "Signature $VALIDATION_SIGNER not found"
+        exit 1
+      fi
+  - name: Deploy to Kubernetes
+    type: deployer
+    target:
+      region_id: ${PROD_REGION_ID}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # copy the script below into your app code repo (e.g. ./scripts/check_predeploy.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_predeploy_kubectl.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh")
+      # ------------------
+      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh
+
+      # This script checks the IBM Container Service cluster is ready, has a namespace configured with access to the private
+      # image registry (using an IBM Cloud API Key), perform a kubectl deploy of container image and check on outcome.
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh")
+  - name: Check health
+    type: deployer
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+      # copy the script below into your app code repo (e.g. ./scripts/check_health.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_health.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+      # ------------------
+      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
+      # Check liveness and readiness probes to confirm application is healthy
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
