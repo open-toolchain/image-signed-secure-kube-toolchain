@@ -94,7 +94,7 @@ stages:
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(openssl rand -base64 16)
         fi
         echo "Doing Docker Content Trust initialization for GUN $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-        source <(curl -s -S -L "https://github.com/open-toolchain/commons/blob/master/scripts/image_signing/notary_init_gun.sh")
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/notary_init_gun.sh")
 
         
         echo "Backing-up keys in $VAULT_INSTANCE"
