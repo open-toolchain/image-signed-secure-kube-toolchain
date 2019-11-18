@@ -148,8 +148,10 @@
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
         },
-        "signer": {
-            "description": "Name of the image signer (signing key-pair's name)",
+        "vault_name": {
+            "description": {
+                "$ref": "#/messages/deploy.keyDetails"
+            },
             "type": "string",
             "pattern": "\\S"
         }
@@ -166,7 +168,10 @@
         "build-region",
         "build-resource-group",
         "build-cluster-name",
-        "build-cluster-namespace"
+        "build-cluster-namespace",
+        "vault_name",
+        "build_signer",
+        "validation_signer"
     ],
     "form": [
         {
@@ -379,19 +384,25 @@
         {
             "type": "text",
             "readonly": false,
-            "title": "Key Protect Vault Instance name",
+            "title": {
+                "$ref": "#/messages/deploy.vaultName"
+            },
             "key": "vault_name"
         },
         {
             "type": "text",
             "readonly": false,
-            "title": "DevOps Docker Image Build signer",
+            "title": {
+                "$ref": "#/messages/deploy.buildSigner"
+            },
             "key": "build_signer"
         },
         {
             "type": "text",
             "readonly": false,
-            "title": "DevOps Docker Image Validation signer",
+            "title": {
+                "$ref": "#/messages/deploy.validationSigner"
+            },
             "key": "validation_signer"
         },
         {
