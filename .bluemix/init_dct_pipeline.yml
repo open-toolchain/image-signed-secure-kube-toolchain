@@ -58,7 +58,7 @@ stages:
       export DOCKER_CONTENT_TRUST=1
 
       # Setup Docker-In-Docker
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
 
       # configure the container registry
       echo "REGISTRY REGION $REGISTRY_REGION"
@@ -80,8 +80,8 @@ stages:
       fi
 
       export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-      source <(curl -s -S -L "https://raw.githubusercontent.com/huayuenh/jumpstart/master/check_signers.sh")
-      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/signatures.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/check_signers.sh")
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
       if [ $(findTrustData "$GUN") == "false" ]; then
         echo "NO TRUST DATA FOUND"
         # Initialize the repository for Docker Content Trust
@@ -94,7 +94,7 @@ stages:
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(openssl rand -base64 16)
         fi
         echo "Doing Docker Content Trust initialization for GUN $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-        source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/notary_init_gun.sh")
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/notary_init_gun.sh")
 
         
         echo "Backing-up keys in $VAULT_INSTANCE"
@@ -122,7 +122,7 @@ stages:
         DEVOPS_SIGNER=$i
         # Restore root & repository keys
         echo "Restoring keys from $VAULT_INSTANCE"
-        source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/add_signer.sh")
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
       done
 - name: Setup IKS Runtime enforcement in deployment cluster
   inputs:
@@ -156,7 +156,7 @@ stages:
       #!/bin/bash
       #set -x
 
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/check_helm_up_and_running.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
 
       # Install CISE
       if helm list cise | grep '^cise'; then
@@ -178,7 +178,7 @@ stages:
         DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
         DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
 
-        source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/create_cise_crd.sh")
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
         createCISE_CRD | tee cise_crd_custom_policy.yaml
 
         echo " "
