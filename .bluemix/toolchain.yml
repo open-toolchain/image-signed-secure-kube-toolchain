@@ -20,7 +20,7 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
 toolchain:
-  name: 'advanced-kube-toolchain-{{timestamp}}'
+  name: 'image-signed-kube-toolchain-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
