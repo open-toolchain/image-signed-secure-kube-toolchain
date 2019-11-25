@@ -1,6 +1,6 @@
 ---
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
-template.name: "[G'Ｓｈｉｆｔ Ｌｅｆｔ ｃｏmpliance for IBM Cloud Servicesฏูİı｜]"
+template.name: "[G'Ｄｅｖｅｌｏｐ ａ Ｋｕｂernetes app with image signingฏูİı｜]"
 template.description: "[G'Ｗｉｔｈ ｔｈｉｓ ｔｏｏｌｃｈａｉｎ, ｙｏｕ ｃａｎ ｄｅｖｅｌｏｐ, ａｎｄ ｄｅｐｌｏｙ ａｎ ａｐｐｌｉｃａｔｉｏｎ ｓｅｃｕｒｅｌｙ ｉｎｔｏ ａ Ｋｕｂｅｒｎｅｔｅｓ ｃｌｕｓｔｅｒ ｍａｎａｇｅｄ ｂｙ ｔｈｅ ＩＢＭ Ｃｌｏｕｄ Ｋｕｂｅｒｎｅｔｅｓ Ｓｅｒｖｉｃｅ. Ｔｈｉｓ ｔｏｏｌｃｈａｉｎ ｒｅｑｕｉｒｅｓ ｐｒｅ-ｃｏｎｆｉｇｕｒｅｄ ｋｅｙｓ ｔｈａｔ ｃａｎ ｂｅ ｓｅｔ ｕｐ ｕｓｉｎｇ ｔｈｅ [Ｋｅｙ-Ｍａｎａｇｅｍｅｎｔ-Ａｄｍｉｎ-Ｔｅｍｐｌａｔｅ.](ｈｔｔｐｓ://ｇｉｔｈｕｂ.ｃｏｍ/ｏｐｅｎ-ｔｏｏｌｃｈａｉｎ/ｋｅｙ-ｍａｎａｇｅｍｅｎｔ-ａｄｍｉｎ-ｔｏｏｌｃｈａｉｎ) Ｂｙ ｄｅｆａｕｌｔ, ｔｈｅ ｔｏｏｌｃｈａｉｎ ｕｓｅｓ ａ ｓａｍｐｌｅ Ｎｏｄｅ.ｊｓ \"Ｈｅｌｌｏ Ｗｏｒｌｄ\" ａｐｐ, ｂｕｔ ｙｏｕ ｃａｎ ｌｉｎｋ ｔｏ ｙｏｕｒ ｏｗｎ ＧｉｔＨｕｂ ｒｅｐｏｓｉｔｏｒｙ ｉｎｓｔｅａｄ. Ｔｈｉｓ ｔｏｏｌｃｈａｉｎ ｉｓ ｐｒｅｃｏｎｆｉｇｕred with Docker image signing and a signature check policy on the Kubernetes cluster for continuous delivery with [Vulnerability Advisor](https://cloud.ibm.com/docs/services/va?topic=va-va_index), source control, issue tracking, and online editing.\n\n You can manage your IBM Cloud Container clusters in the [console](https://cloud.ibm.com/kubernetes/clusters).\n\nThis toolchain uses tools that are part of the Continuous Delivery service. If an instance of that service isn't already in the selected resource group or organization, when you click **Create**, it is automatically added with the free [Lite](/catalog/services/continuous-delivery/) plan selected.\n\nTo get started, click **Create**.\n\nFor step-by-step instructions, follow the [tutorial](https://www.ibm.com/cloud/garage/tutorials/use-develop-kubernetes-app-toolchain).ฏูİı｜]"
 template.gettingStarted: "[G' **Ｙｏｕｒ ｔｏｏｌｃｈａｉｎ ｉｓ ｒｅａｄｙ!**\n**Ｑｕｉｃｋ ｓｔａｒｔ:** Ｃｏｍｍｉｔ ａ ｃｈａｎｇｅ ｔｏ ｔｈｅ Ｇｉｔ ｒｅｐｏ ｔｏ ｔｒｉｇｇｅｒ ａ ｎｅｗ Ｄｏｃｋｅｒ ｉｍａｇｅ ｂｕｉｌｄ, ｗｈｉｃｈ ｗｉｌｌ ｂｅ ｓｃanned for vulnerabilites and deployed in your Kubernetes cluster. For step-by-step instructions, see the [tutorial](https://www.ibm.com/cloud/garage/tutorials/use-develop-kubernetes-app-toolchain?task=2) for this toolchain.ฏูİı｜]"
 deploy.title: "[G'Ｈｅｌｌｏ Ｗｏｒld Deploy Stageฏูİı｜]"
@@ -26,6 +26,10 @@ deploy.clusterNs: "[G'Ｃｌｕｓｔer namespaceฏูİı｜]"
 deploy.clusterDescription: "[G'Ｒｅｔｒｉｅｖｅ ｔｈｅ Ｋｕｂｅｒｎｅｔｅｓ ｃｌｕｓｔｅｒ ｎａｍｅ ｗｉth the CLI command 'ibmcloud cs clusters' or via the [console](https://cloud.ibm.com/kubernetes/clusters).ฏูİı｜]"
 deploy.clusternsDescription: "[G'Ｉｆ ｔｈｅ ｃｌｕｓｔｅｒ ｎａｍｅｓｐａce doesn't exist already, it will be automatically created and configured.ฏูİı｜]"
 deploy.keyCreation: "[G'Ｇｅｎｅｒａｔe Signing Keysฏูİı｜]"
+deploy.keyDetails: "[G'Ｓｐｅｃｉｆｙ ｔｈｅ Ｋｅｙ Ｐｒｏｔｅｃｔ ｉｎｓｔａｎｃｅ ｎａｍｅ, ｗｈｅｒｅ ｔｈｅ ｉｍａｇｅ ｓｉｇｎｉｎｇ ｋｅｙｓ ｈａｖｅ ｂｅｅｎ ｓｔｏｒｅｄ. Ｔｈｅ ｂｕｉｌｄ ａｎｄ ｖａｌidation signer fields contain default names for these signers. The values must match the values created in the Key-Management-Admin-Template. See https://github.com/open-toolchain/key-management-admin-toolchainฏูİı｜]"
+deploy.vaultName: "[G'Ｋｅｙ Ｐｒｏｔｅｃt Vault Instance nameฏูİı｜]"
+deploy.buildSigner: "[G'ＤｅｖＯｐｓ Ｄｏｃker Image Build signerฏูİı｜]"
+deploy.validationSigner: "[G'ＤｅｖＯｐｓ Ｄｏｃｋer Image Validation signerฏูİı｜]"
 region: "[G'Ｃｌｕｓter regionฏูİı｜]"
 organization: "[G'Ｏｒganizationฏูİı｜]"
 space: "[G'Spaceฏูİı｜]"
