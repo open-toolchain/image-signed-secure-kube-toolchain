@@ -322,7 +322,9 @@
                 },
                 {
                     "type": "label",
-                    "title": "Build Region"
+                    "title": {
+                        "$ref": "#/messages/buildregion"
+                    }
                 },
                 {
                     "type": "label",
@@ -330,7 +332,9 @@
                 },
                 {
                     "type": "label",
-                    "title": "Build Resource Group"
+                    "title": {
+                        "$ref": "#/messages/deploy.buildrg"
+                    }
                 },
                 {
                     "type": "label",
@@ -338,7 +342,9 @@
                 },
                 {
                     "type": "label",
-                    "title": "Build Cluster"
+                    "title": {
+                        "$ref": "#/messages/deploy.buildcluster"
+                    }
                 },
                 {
                     "type": "label",
@@ -346,7 +352,9 @@
                 },
                 {
                     "type": "label",
-                    "title": "Build Cluster Namespace"
+                    "title": {
+                        "$ref": "#/messages/deploy.buildclusterNs"
+                    }
                 },
                 {
                     "type": "select",
