@@ -144,7 +144,9 @@
             }
         },
         "build-cluster-namespace": {
-            "description": "If the cluster namespace doesn't exist already, it will be automatically created and configured.",
+            "description": {
+                "$ref": "#/messages/deploy.clusterNs"
+            },
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
         },
