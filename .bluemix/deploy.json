@@ -224,7 +224,7 @@
                 {
                     "type": "select",
                     "title": {
-                        "$ref": "#/messages/deploy.imgregRegion"
+                        "$ref": "#/messages/deploy.containerregRegion"
                     },
                     "key": "registry-region"
                 },
@@ -236,7 +236,7 @@
                     "type": "select",
                     "readonly": false,
                     "title": {
-                        "$ref": "#/messages/deploy.imgregNs"
+                        "$ref": "#/messages/deploy.containerregns"
                     },
                     "key": "registry-namespace"
                 }
