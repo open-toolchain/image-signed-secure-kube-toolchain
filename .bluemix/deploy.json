@@ -53,7 +53,7 @@
         },
         "prod-region": {
             "description": {
-                "$ref": "#/messages/deploy.regionDescription"
+                "$ref": "#/messages/region"
             },
             "type": "string",
             "disabled": false,
@@ -66,7 +66,7 @@
         },
         "prod-resource-group": {
             "description": {
-                "$ref": "#/messages/deploy.rgDescription"
+                "$ref": "#/messages/deploy.rg"
             },
             "type": "string",
             "validator": {
@@ -78,7 +78,7 @@
         },
         "prod-cluster-name": {
             "description": {
-                "$ref": "#/messages/deploy.clusterNameDescription"
+                "$ref": "#/messages/deploy.cluster"
             },
             "type": "string",
             "pattern": "\\S",
@@ -92,7 +92,7 @@
         },
         "prod-cluster-namespace": {
             "description": {
-                "$ref": "#/messages/deploy.namespaceDescription"
+                "$ref": "#/messages/deploy.clusterNs"
             },
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
@@ -106,7 +106,7 @@
         },
         "build-region": {
             "description": {
-                "$ref": "#/messages/deploy.regionDescription"
+                "$ref": "#/messages/buildregion"
             },
             "type": "string",
             "disabled": false,
@@ -119,7 +119,7 @@
         },
         "build-resource-group": {
             "description": {
-                "$ref": "#/messages/deploy.rgDescription"
+                "$ref": "#/messages/deploy.buildrg"
             },
             "type": "string",
             "validator": {
@@ -131,7 +131,7 @@
         },
         "build-cluster-name": {
             "description": {
-                "$ref": "#/messages/deploy.clusterNameDescription"
+                "$ref": "#/messages/deploy.buildcluster"
             },
             "type": "string",
             "pattern": "\\S",
@@ -144,7 +144,9 @@
             }
         },
         "build-cluster-namespace": {
-            "description": "If the cluster namespace doesn't exist already, it will be automatically created and configured.",
+            "description": {
+                "$ref": "#/messages/deploy.clusterNs"
+            },
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
         },
@@ -222,7 +224,7 @@
                 {
                     "type": "select",
                     "title": {
-                        "$ref": "#/messages/deploy.imgregRegion"
+                        "$ref": "#/messages/deploy.containerregRegion"
                     },
                     "key": "registry-region"
                 },
@@ -234,7 +236,7 @@
                     "type": "select",
                     "readonly": false,
                     "title": {
-                        "$ref": "#/messages/deploy.imgregNs"
+                        "$ref": "#/messages/deploy.containerregns"
                     },
                     "key": "registry-namespace"
                 }
