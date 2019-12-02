@@ -45,10 +45,10 @@ stages:
     curatedDockerImage: default
     artifact_dir: back-your-keys
     build_type: customimage
-    docker_image: jauninb/pbi-docker:latest
+    docker_image: ibmcom/pipeline-base-image:latest
     script: |
       #!/bin/bash
-
+      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/commons/master/scripts/image_signing/add_docker.sh")
       # Get the notary binary
       curl -L https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -o /usr/local/bin/notary
       # Make it executable
