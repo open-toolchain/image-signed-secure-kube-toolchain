@@ -177,10 +177,11 @@ stages:
     curatedDockerImage: default
     artifact_dir: ''
     build_type: customimage
-    docker_image: jauninb/pbi-docker:latest
+    docker_image: ibmcom/pipeline-base-image:latest
     script: |
       #!/bin/bash
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -191,7 +192,7 @@ stages:
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
-      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/signatures.sh")
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
       # Restore repository pem key and signer pem key
       VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "$IBMCLOUD_TARGET_REGION" "$IBMCLOUD_TARGET_RESOURCE_GROUP")
       JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
@@ -201,7 +202,7 @@ stages:
       export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
       export DCT_DISABLED=false
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/build_image_dind.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/build_image_dind.sh")
 - name: VALIDATE
   inputs:
   - type: job
@@ -278,13 +279,14 @@ stages:
   - name: Sign Image for Validation
     type: tester
     test_type: customimage
-    docker_image: jauninb/pbi-docker:latest
+    docker_image: ibmcom/pipeline-base-image:latest
     script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
       # Sign the built image as validated
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -295,7 +297,7 @@ stages:
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
       
-      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/jumpstart/master/sign_image_with_vault_keys.sh")
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/sign_image_with_vault_keys.sh")
 - name: DEPLOY STAGE
   inputs:
   - type: job
@@ -338,13 +340,14 @@ stages:
   - name: Signatures Pre-Check
     type: tester
     test_type: customimage
-    docker_image: jauninb/pbi-docker:latest
+    docker_image: ibmcom/pipeline-base-image:latest
     script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
       # This script inspect the docker image signatures to ensure compliance
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -451,13 +454,14 @@ stages:
   - name: Signatures Pre-Check
     type: tester
     test_type: customimage
-    docker_image: jauninb/pbi-docker:latest
+    docker_image: ibmcom/pipeline-base-image:latest
     script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
       # This script inspect the docker image signatures to ensure compliance
-      source <(curl -s -S -L "https://raw.githubusercontent.com/jauninb/jumpstart/master/setup_dind.sh")
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
