@@ -81,7 +81,7 @@ stages:
 
       export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
       source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/check_signers.sh")
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh)
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
       if [ $(findTrustData "$GUN") == "false" ]; then
         echo "NO TRUST DATA FOUND"
         # Initialize the repository for Docker Content Trust
