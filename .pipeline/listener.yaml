@@ -1,0 +1,147 @@
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-container-registry
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: apikey
+      description: the ibmcloud api key
+    - name: image-url
+      description: The image url in your container registry
+    - name: path-to-dockerfile
+      default: '.'
+    - name: pipeline-debug
+      default: "0"
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: dev-cluster-namespace
+      description: namespace dev
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: app-name
+      description: The name of your app
+    - name: validation-signer
+      description: VALIDATION_SIGNER
+    - name: vault-name
+      description: Specify the Key Protect instance name
+    - name: dev-resource-group
+      description: Resource Group
+    - name: registry-namespace
+      description: The namespace in the container image registry. You can set it up
+        with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+    - name: dev-region
+      description: target region
+  resourcetemplates:
+    # CD secret to provide API_KEY to access toolchain information
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.apikey)
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineResource
+      metadata:
+        name: image-to-build
+      spec:
+        type: image
+        params:
+          - name: url
+            value: $(params.image-url)
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: containerize-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineResource
+      metadata:
+        name: $(params.cluster-name)
+      spec:
+        type: cluster
+        params:
+          - name: name
+            value: $(params.cluster-name)
+          - name: username
+            value: norealvalueneeded
+          - name: url
+            value: https://no.real.value.needed
+          - name: token
+            value: norealvalueneeded
+          - name: cadata
+            value: norealvalueneeded
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: containerize-$(uid)
+      spec:
+        pipelineRef:
+          name: secure-kube-pipeline
+        resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
+          - name: target-cluster
+            resourceRef:
+              name: $(params.cluster-name)
+        params:
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: dev-cluster-namespace
+            value: $(params.dev-cluster-namespace)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: apikey
+            value: $(params.apikey)
+          - name: dev-resource-group
+            value: $(params.dev-resource-group) 
+          - name: validation-signer
+            value: $(params.validation-signer)
+          - name: vault-name
+            value: $(params.vault-name)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: containerize-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-container-registry
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: listener
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-container-registry
+      template:
+        name: trigger-template-container-registry

@@ -1,0 +1,140 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: dct-template
+spec:
+  params:
+    - name: app-name
+      description: The name of your app
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: validation-signer
+      description: validation signer
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: vault-name
+      decription: the key protect instance name
+    - name: dev-resource-group
+      description: the resource group
+    - name: cluster-name
+      description: the name of the targeted cluster
+    - name: dev-region
+      description: target region
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: tiller
+        namespace: default
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.api-key)
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineResource
+      metadata:
+        name: $(params.cluster-name)
+      spec:
+        type: cluster
+        params:
+        - name: name
+          value: $(params.cluster-name)
+        - name: username
+          value: norealvalueneeded
+        - name: url
+          value: https://no.real.value.needed
+        - name: token
+          value: norealvalueneeded
+        - name: cadata
+          value: norealvalueneeded
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: dct-pipelinerun-$(uid)
+      spec:
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
+        params:
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: vault-name
+            value: $(params.vault-name)
+          - name: app-name
+            value: $(params.app-name)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: api-key
+            value: $(params.api-key)
+          - name: dev-region
+            value: $(params.dev-region)
+          - name: dev-resource-group
+            value: $(params.dev-resource-group)
+          - name: validation-signer
+            value: $(params.validation-signer)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        pipelineRef:
+          name: dct-pipeline
+        serviceAccountName: tiller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: default
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: dct-binding
+spec:
+  params:
+    - name: repository
+      value: https://github.com/open-toolchain/hello-containers
+    - name: revision
+      value: master
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: dct-listener
+spec:
+  triggers:
+    - binding:
+        name: dct-binding
+      template:
+        name: dct-template

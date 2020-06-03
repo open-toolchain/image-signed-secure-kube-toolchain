@@ -1,0 +1,95 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dct-pipeline
+spec:
+  params:
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: app-name
+      description: The name of your app.
+    - name: vault-name
+      description: Specify the Key Protect instance name, where the image signing keys
+        have been stored. The build and validation signer fields contain default names
+        for these signers. The values must match the values created in the Key-Management-Admin-Template.
+        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: dev-region
+      description: the target region
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: registry-namespace
+      description: The namespace in the container image registry. You can set it up with {ic cr namespace-add].
+        Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+    - name: dev-resource-group
+      description: Resource Group
+    - name: validation-signer
+      description: the validation signer
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+
+  workspaces:
+    - name: artifacts
+
+  tasks:
+    - name: init-docker-content-trust
+      taskRef:
+        name: dct-init
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: api-key
+          value: $(params.api-key)
+        - name: vault-name
+          value: $(params.vault-name)
+        - name: region
+          value: $(params.dev-region)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: validation-signer
+          value: $(params.validation-signer)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: apply-image-enforcement-policy
+      runAfter: [init-docker-content-trust]
+      taskRef:
+        name: dct-apply-image-enforcement-policy
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: api-key
+          value: $(params.api-key)
+        - name: vault-name
+          value: $(params.vault-name)
+        - name: region
+          value: $(params.dev-region)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: validation-signer
+          value: $(params.validation-signer)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
