@@ -11,7 +11,7 @@ inputs:
 triggers:
   - type: manual
     name: Manual Trigger
-    eventListener: listener
+    eventListener: dct-listener
 properties:
   - name: api-key
     value: ${API_KEY}
