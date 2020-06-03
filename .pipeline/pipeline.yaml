@@ -153,7 +153,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: deploy-dev
       taskRef:
-        name: docker-check-task2
+        name: kube-deploy
       runAfter: [docker-image-sign]
       params:
         - name: repository

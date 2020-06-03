@@ -5,7 +5,7 @@ inputs:
     service: ${DCT_PIPELINE_REPO}
     path: .init_dct_pipeline
   - type: git
-    branch: task_test
+    branch: trialv1
     service: ${TEKTON_CATALOG_REPO}
     path: temp/dct
 triggers:
