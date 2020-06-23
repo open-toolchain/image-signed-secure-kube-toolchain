@@ -14,6 +14,8 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: validation-signer
       description: validation signer
+    - name: build-signer
+      description: build signer
     - name: registry-namespace
       description: The registry namespace
     - name: registry-region
@@ -96,6 +98,8 @@ spec:
             value: $(params.dev-resource-group)
           - name: validation-signer
             value: $(params.validation-signer)
+          - name: build-signer
+            value: $(params.build-signer)
           - name: cluster-name
             value: $(params.cluster-name)
           - name: pipeline-debug

@@ -30,6 +30,8 @@ spec:
       description: Resource Group
     - name: validation-signer
       description: the validation signer
+    - name: build-signer
+      description: build signer
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
 
@@ -62,6 +64,8 @@ spec:
           value: $(params.dev-resource-group)
         - name: validation-signer
           value: $(params.validation-signer)
+        - name: build-signer
+          value: $(params.build-signer)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
