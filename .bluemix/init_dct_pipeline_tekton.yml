@@ -7,7 +7,7 @@ inputs:
   - type: git
     branch: trialv1
     service: ${TEKTON_CATALOG_REPO}
-    path: temp/dct
+    path: signing/dct
 triggers:
   - type: manual
     name: Manual Trigger
