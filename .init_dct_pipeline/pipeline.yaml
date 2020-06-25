@@ -41,7 +41,7 @@ spec:
   tasks:
     - name: init-docker-content-trust
       taskRef:
-        name: dct-init
+        name: signing-dct-init
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -72,7 +72,7 @@ spec:
     - name: apply-image-enforcement-policy
       runAfter: [init-docker-content-trust]
       taskRef:
-        name: dct-apply-image-enforcement-policy
+        name: signing-dct-enforcement-policy
       workspaces:
         - name: artifacts
           workspace: artifacts
