@@ -420,7 +420,7 @@
         },
         {
             "type": "table",
-            "columnCount": 7,
+            "columnCount": 5,
             "widths": [
                 "31%",
                 "4%",
@@ -448,6 +448,12 @@
                 {
                     "type": "label",
                     "title": ""
+                },
+                {
+                    "type": "label",
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultName"
+                    }
                 },
                 {
                     "type": "select",
