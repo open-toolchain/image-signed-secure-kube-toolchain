@@ -193,12 +193,14 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
       params:
-        - name: app-name
-          value: $(params.app-name)
+        - name: image-repository
+          value: $(tasks.containerize.results.image-repository)
+        - name: image-digest
+          value: $(tasks.containerize.results.image-digest)
+        - name: image-tags
+          value: $(tasks.containerize.results.image-tags)
         - name: signer
           value: $(params.build-signer)
-        - name: registry-namespace
-          value: $(params.registry-namespace)
         - name: registry-region
           value: $(params.registry-region)
         - name: vault-region
@@ -268,12 +270,14 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
       params:
-        - name: app-name
-          value: $(params.app-name)
+        - name: image-repository
+          value: $(tasks.containerize.results.image-repository)
+        - name: image-digest
+          value: $(tasks.containerize.results.image-digest)
+        - name: image-tags
+          value: $(tasks.containerize.results.image-tags)
         - name: signer
           value: $(params.validation-signer)
-        - name: registry-namespace
-          value: $(params.registry-namespace)
         - name: registry-region
           value: $(params.registry-region)
         - name: vault-region
