@@ -35,10 +35,8 @@ spec:
       description: build signer
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-
   workspaces:
     - name: artifacts
-
   tasks:
     - name: init-docker-content-trust
       taskRef:
@@ -71,7 +69,6 @@ spec:
           value: $(params.build-signer)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
     - name: apply-image-enforcement-policy
       runAfter: [init-docker-content-trust]
       taskRef:
@@ -80,6 +77,8 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
+        - name: shuttle-properties-file
+          value: $(tasks.init-docker-content-trust.results.shuttle-properties-file)
         - name: image-name
           value: $(params.image-name)
         - name: region

@@ -47,7 +47,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: dct-pipelinerun-$(uid)
+        name: dct-init-and-cise-$(uid)
       spec:
         workspaces:
           - name: artifacts
