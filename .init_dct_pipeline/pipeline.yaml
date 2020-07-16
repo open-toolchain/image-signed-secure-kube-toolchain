@@ -51,12 +51,6 @@ spec:
           value: $(params.registry-namespace)
         - name: registry-region
           value: $(params.registry-region)
-        - name: region
-          value: $(params.region)
-        - name: resource-group
-          value: $(params.resource-group)
-        - name: cluster-name
-          value: $(params.cluster-name)
         - name: vault-region
           value: $(params.vault-region)
         - name: vault-resource-group
