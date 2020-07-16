@@ -79,8 +79,6 @@ spec:
       params:
         - name: shuttle-properties-file
           value: $(tasks.init-docker-content-trust.results.shuttle-properties-file)
-        - name: image-name
-          value: $(params.image-name)
         - name: region
           value: $(params.region)
         - name: resource-group
