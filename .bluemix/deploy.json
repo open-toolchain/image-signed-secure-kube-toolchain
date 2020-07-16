@@ -150,6 +150,31 @@
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
         },
+        "vault-region": {
+            "description": {
+                "$ref": "#/messages/vaultregion"
+            },
+            "type": "string",
+            "disabled": false,
+            "validator": {
+                "v-type": "k8s-region",
+                "params": [
+                    "api-key"
+                ]
+            }
+        },
+        "vault-resource-group": {
+            "description": {
+                "$ref": "#/messages/vaultrg"
+            },
+            "type": "string",
+            "validator": {
+                "v-type": "resource-group",
+                "params": [
+                    "api-key"
+                ]
+            }
+        },
         "vault_name": {
             "description": {
                 "$ref": "#/messages/deploy.keyDetails"
@@ -171,6 +196,8 @@
         "build-resource-group",
         "build-cluster-name",
         "build-cluster-namespace",
+        "vault-region",
+        "vault-resource-group",
         "vault_name",
         "build_signer",
         "validation_signer"
@@ -392,12 +419,74 @@
             ]
         },
         {
-            "type": "text",
-            "readonly": false,
-            "title": {
-                "$ref": "#/messages/deploy.vaultName"
-            },
-            "key": "vault_name"
+            "type": "table",
+            "columnCount": 5,
+            "widths": [
+                "32%",
+                "2%",
+                "32%",
+                "2%",
+                "32%"
+            ],
+            "items": [
+                {
+                    "type": "label",
+                    "title": {
+                        "$ref": "#/messages/vaultregion"
+                    }
+                },
+                {
+                    "type": "label",
+                    "title": ""
+                },
+                {
+                    "type": "label",
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultrg"
+                    }
+                },
+                {
+                    "type": "label",
+                    "title": ""
+                },
+                {
+                    "type": "label",
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultName"
+                    }
+                },
+                {
+                    "type": "select",
+                    "key": "vault-region",
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultregionDescription"
+                    }
+                },
+                {
+                    "type": "label",
+                    "title": ""
+                },
+                {
+                    "type": "select",
+                    "key": "vault-resource-group",
+                    "readonly": false,
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultrgDescription"
+                    }
+                },
+                {
+                    "type": "label",
+                    "title": ""
+                },
+                {
+                    "type": "text",
+                    "readonly": false,
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultName"
+                    },
+                    "key": "vault_name"
+                }
+            ]
         },
         {
             "type": "text",
