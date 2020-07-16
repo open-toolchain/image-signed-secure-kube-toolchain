@@ -31,6 +31,7 @@ spec:
       description: the namespace of the targeted cluster
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+      value: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -81,7 +82,6 @@ spec:
             value: $(params.pipeline-debug)
         pipelineRef:
           name: dct-pipeline
-        serviceAccountName: tiller
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

@@ -10,7 +10,7 @@ inputs:
     path: signing/dct
 triggers:
   - type: manual
-    name: Manual Trigger
+    name: initialize-dct-and-cise
     eventListener: dct-listener
 properties:
   - name: apikey
