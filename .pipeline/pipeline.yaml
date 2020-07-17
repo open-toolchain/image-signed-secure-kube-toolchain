@@ -201,8 +201,6 @@ spec:
           value: $(tasks.containerize.results.image-tags)
         - name: signer
           value: $(params.build-signer)
-        - name: registry-region
-          value: $(params.registry-region)
         - name: vault-region
           value: $(params.vault-region)
         - name: vault-resource-group
@@ -278,8 +276,6 @@ spec:
           value: $(tasks.containerize.results.image-tags)
         - name: signer
           value: $(params.validation-signer)
-        - name: registry-region
-          value: $(params.registry-region)
         - name: vault-region
           value: $(params.vault-region)
         - name: vault-resource-group
