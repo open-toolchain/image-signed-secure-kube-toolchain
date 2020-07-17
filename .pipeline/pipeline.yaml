@@ -189,9 +189,6 @@ spec:
         - containerize
       taskRef:
         name: signing-dct-sign
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
       params:
         - name: image-repository
           value: $(tasks.containerize.results.image-repository)
@@ -264,9 +261,6 @@ spec:
         - vulnerability-advisor
       taskRef:
         name: signing-dct-sign
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
       params:
         - name: image-repository
           value: $(tasks.containerize.results.image-repository)
