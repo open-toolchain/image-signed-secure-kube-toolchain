@@ -115,6 +115,8 @@ services:
             } else {
               'grit-or-gitlab-commit';
             }
+          VAULT_REGION: '{{form.pipeline.parameters.vault-region}}'
+          VAULT_RESOURCE_GROUP: '{{form.pipeline.parameters.vault-resource-group}}'
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
@@ -145,6 +147,8 @@ services:
           BUILD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
           BUILD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
           BUILD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.build-cluster-namespace}}'
+          VAULT_REGION: '{{form.pipeline.parameters.vault-region}}'
+          VAULT_RESOURCE_GROUP: '{{form.pipeline.parameters.vault-resource-group}}'
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'

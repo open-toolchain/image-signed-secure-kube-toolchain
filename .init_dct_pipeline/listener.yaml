@@ -5,13 +5,8 @@ metadata:
   name: dct-template
 spec:
   params:
-    - name: app-name
+    - name: image-name
       description: The name of your app
-    - name: api-key
-      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
-        Service API and interact with the cluster. You can obtain your API key with
-        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
-        by clicking **Create API key** (Each API key only can be viewed once).
     - name: validation-signer
       description: validation signer
     - name: build-signer
@@ -20,17 +15,23 @@ spec:
       description: The registry namespace
     - name: registry-region
       description: the registry region
+    - name: vault-region
+      description: target vault region
+    - name: vault-resource-group
+      description: target vault resource group
     - name: vault-name
       decription: the key protect instance name
-    - name: dev-resource-group
-      description: the resource group
+    - name: cluster-region
+      description: target cluster region
+    - name: cluster-resource-group
+      description: target cluster resource group
     - name: cluster-name
       description: the name of the targeted cluster
-    - name: dev-region
-      description: target region
+    - name: cluster-namespace
+      description: the namespace of the targeted cluster
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -43,83 +44,44 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: v1
-      kind: ServiceAccount
-      metadata:
-        name: tiller
-        namespace: default
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cd-secret
-      type: Opaque
-      stringData:
-        API_KEY: $(params.api-key)
-    - apiVersion: tekton.dev/v1beta1
-      kind: PipelineResource
-      metadata:
-        name: $(params.cluster-name)
-      spec:
-        type: cluster
-        params:
-        - name: name
-          value: $(params.cluster-name)
-        - name: username
-          value: norealvalueneeded
-        - name: url
-          value: https://no.real.value.needed
-        - name: token
-          value: norealvalueneeded
-        - name: cadata
-          value: norealvalueneeded
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: dct-pipelinerun-$(uid)
+        name: dct-init-and-cise-$(uid)
       spec:
         workspaces:
           - name: artifacts
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: registry-namespace
-            value: $(params.registry-namespace)
-          - name: vault-name
-            value: $(params.vault-name)
-          - name: app-name
-            value: $(params.app-name)
+          - name: image-name
+            value: $(params.image-name)
           - name: registry-region
             value: $(params.registry-region)
-          - name: api-key
-            value: $(params.api-key)
-          - name: dev-region
-            value: $(params.dev-region)
-          - name: dev-resource-group
-            value: $(params.dev-resource-group)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: cluster-region
+            value: $(params.cluster-region)
+          - name: cluster-resource-group
+            value: $(params.cluster-resource-group)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: cluster-namespace
+            value: $(params.cluster-namespace)
+          - name: vault-region
+            value: $(params.vault-region)
+          - name: vault-resource-group
+            value: $(params.vault-resource-group)
+          - name: vault-name
+            value: $(params.vault-name)
           - name: validation-signer
             value: $(params.validation-signer)
           - name: build-signer
             value: $(params.build-signer)
-          - name: cluster-name
-            value: $(params.cluster-name)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         pipelineRef:
           name: dct-pipeline
-        serviceAccountName: tiller
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: tiller
-    namespace: default
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -127,10 +89,6 @@ metadata:
   name: dct-binding
 spec:
   params:
-    - name: repository
-      value: https://github.com/open-toolchain/hello-containers
-    - name: revision
-      value: master
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
