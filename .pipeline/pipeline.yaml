@@ -208,7 +208,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: vulnerability-advisor
       runAfter:
-        - build-sign
+        - containerize
       taskRef:
         name: icr-check-va-scan
       params:
@@ -281,7 +281,7 @@ spec:
     - name: deploy-to-kubernetes
       taskRef:
         name: iks-deploy-to-kubernetes
-      runAfter: [validation-sign]
+      runAfter: [build-sign, validation-sign]
       params:
         - name: shuttle-properties-file
           value: "build.properties"
