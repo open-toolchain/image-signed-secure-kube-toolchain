@@ -21,9 +21,9 @@ spec:
       description: target vault resource group
     - name: vault-name
       decription: the key protect instance name
-    - name: region
+    - name: cluster-region
       description: target cluster region
-    - name: resource-group
+    - name: cluster-resource-group
       description: target cluster resource group
     - name: cluster-name
       description: the name of the targeted cluster
@@ -60,10 +60,10 @@ spec:
             value: $(params.registry-region)
           - name: registry-namespace
             value: $(params.registry-namespace)
-          - name: region
-            value: $(params.region)
-          - name: resource-group
-            value: $(params.resource-group)
+          - name: cluster-region
+            value: $(params.cluster-region)
+          - name: cluster-resource-group
+            value: $(params.cluster-resource-group)
           - name: cluster-name
             value: $(params.cluster-name)
           - name: cluster-namespace

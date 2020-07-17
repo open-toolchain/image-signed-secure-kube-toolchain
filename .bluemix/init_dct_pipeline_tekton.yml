@@ -25,10 +25,10 @@ properties:
   - name: registry-namespace
     value: ${REGISTRY_NAMESPACE}
     type: text
-  - name: region
+  - name: cluster-region
     value: ${PROD_REGION_ID}
     type: text
-  - name: resource-group
+  - name: cluster-resource-group
     value: ${PROD_RESOURCE_GROUP}
     type: text
   - name: cluster-name

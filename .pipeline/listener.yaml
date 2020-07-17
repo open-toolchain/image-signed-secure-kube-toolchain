@@ -38,11 +38,11 @@ spec:
     - name: deployment-file
       description: file containing the kubernetes deployment definition
       default: "deployment.yml"
-    - name: dev-region
-    - name: dev-resource-group
+    - name: cluster-region
+    - name: cluster-resource-group
     - name: cluster-name
       description: the name of the cluster to target
-    - name: dev-cluster-namespace
+    - name: cluster-namespace
       description: namespace dev
     - name: vault-region
       description: target vault region
@@ -111,14 +111,14 @@ spec:
             value: $(params.fail-on-scanned-issues)
           - name: deployment-file
             value: $(params.deployment-file)
-          - name: dev-region
-            value: $(params.dev-region)
-          - name: dev-resource-group
-            value: $(params.dev-resource-group)
+          - name: cluster-region
+            value: $(params.cluster-region)
+          - name: cluster-resource-group
+            value: $(params.cluster-resource-group)
           - name: cluster-name
             value: $(params.cluster-name)
-          - name: dev-cluster-namespace
-            value: $(params.dev-cluster-namespace)
+          - name: cluster-namespace
+            value: $(params.cluster-namespace)
           - name: vault-region
             value: $(params.vault-region)
           - name: vault-resource-group

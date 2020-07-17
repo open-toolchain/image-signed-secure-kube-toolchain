@@ -7,9 +7,9 @@ spec:
   params:
     - name: image-name
       description: The name of your app.
-    - name: region
+    - name: cluster-region
       description: the target region
-    - name: resource-group
+    - name: cluster-resource-group
       description: Resource Group
     - name: cluster-name
       description: the name of the cluster to target
@@ -74,9 +74,9 @@ spec:
         - name: shuttle-properties-file
           value: $(tasks.init-docker-content-trust.results.shuttle-properties-file)
         - name: region
-          value: $(params.region)
+          value: $(params.cluster-region)
         - name: resource-group
-          value: $(params.resource-group)
+          value: $(params.cluster-resource-group)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: cluster-namespace
