@@ -31,7 +31,7 @@ spec:
       description: the namespace of the targeted cluster
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-      value: "0"
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
