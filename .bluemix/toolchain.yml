@@ -121,7 +121,7 @@ services:
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
         execute: >
-          $env.pipeline_type === 'tekton' ? false : true
+          $env.pipeline_type === 'tekton' ? 'manual-run' : true
   init_dct:
     service_id: pipeline
     services:
