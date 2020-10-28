@@ -447,7 +447,7 @@
                     "type": "select",
                     "key": "vault-region",
                     "title": {
-                        "$ref": "#/messages/deploy.vaultregion"
+                        "$ref": "#/messages/vaultregion"
                     }
                 },
                 {
