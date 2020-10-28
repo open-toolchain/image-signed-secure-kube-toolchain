@@ -422,9 +422,9 @@
             "type": "table",
             "columnCount": 3,
             "widths": [
-                "45%",
+                "49%",
                 "2%",
-                "45%"
+                "49%"
             ],
             "items": [
                 {
@@ -468,7 +468,7 @@
             "type": "table",
             "columnCount": 1,
             "widths": [
-                "45%"
+                "50%"
             ],
             "items": [
                 {
