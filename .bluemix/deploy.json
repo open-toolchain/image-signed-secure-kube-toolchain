@@ -420,13 +420,11 @@
         },
         {
             "type": "table",
-            "columnCount": 5,
+            "columnCount": 3,
             "widths": [
-                "32%",
+                "49%",
                 "2%",
-                "32%",
-                "2%",
-                "32%"
+                "49%"
             ],
             "items": [
                 {
@@ -446,20 +444,10 @@
                     }
                 },
                 {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "label",
-                    "title": {
-                        "$ref": "#/messages/deploy.vaultName"
-                    }
-                },
-                {
                     "type": "select",
                     "key": "vault-region",
                     "title": {
-                        "$ref": "#/messages/deploy.vaultregionDescription"
+                        "$ref": "#/messages/vaultregion"
                     }
                 },
                 {
@@ -471,12 +459,23 @@
                     "key": "vault-resource-group",
                     "readonly": false,
                     "title": {
-                        "$ref": "#/messages/deploy.vaultrgDescription"
+                        "$ref": "#/messages/deploy.vaultrg"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "columnCount": 1,
+            "widths": [
+                "50%"
+            ],
+            "items": [
                 {
                     "type": "label",
-                    "title": ""
+                    "title": {
+                        "$ref": "#/messages/deploy.vaultName"
+                    }
                 },
                 {
                     "type": "text",
