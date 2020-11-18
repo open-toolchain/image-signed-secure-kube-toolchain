@@ -1,0 +1,85 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dct-pipeline
+spec:
+  params:
+    - name: image-name
+      description: The name of your app.
+    - name: cluster-region
+      description: the target region
+    - name: cluster-resource-group
+      description: Resource Group
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: cluster-namespace
+      description: the target cluster namespace where CISE will be installed
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: registry-namespace
+      description: The namespace in the container image registry. You can set it up with {ic cr namespace-add].
+        Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+    - name: vault-region
+      description: the vault region
+    - name: vault-resource-group
+      description: Vault Resource Group
+    - name: vault-name
+      description: Specify the Key Protect instance name, where the image signing keys
+        have been stored. The build and validation signer fields contain default names
+        for these signers. The values must match the values created in the Key-Management-Admin-Template.
+        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: validation-signer
+      description: the validation signer
+    - name: build-signer
+      description: build signer
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+  workspaces:
+    - name: artifacts
+  tasks:
+    - name: init-docker-content-trust
+      taskRef:
+        name: signing-dct-init
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: image-name
+          value: $(params.image-name)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: vault-region
+          value: $(params.vault-region)
+        - name: vault-resource-group
+          value: $(params.vault-resource-group)
+        - name: vault-name
+          value: $(params.vault-name)
+        - name: validation-signer
+          value: $(params.validation-signer)
+        - name: build-signer
+          value: $(params.build-signer)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: apply-image-enforcement-policy
+      runAfter: [init-docker-content-trust]
+      taskRef:
+        name: signing-dct-enforcement-policy
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: shuttle-properties-file
+          value: $(tasks.init-docker-content-trust.results.shuttle-properties-file)
+        - name: region
+          value: $(params.cluster-region)
+        - name: resource-group
+          value: $(params.cluster-resource-group)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: cluster-namespace
+          value: $(params.cluster-namespace)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

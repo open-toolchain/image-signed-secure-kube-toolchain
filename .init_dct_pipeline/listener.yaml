@@ -1,0 +1,102 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: dct-template
+spec:
+  params:
+    - name: image-name
+      description: The name of your app
+    - name: validation-signer
+      description: validation signer
+    - name: build-signer
+      description: build signer
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: vault-region
+      description: target vault region
+    - name: vault-resource-group
+      description: target vault resource group
+    - name: vault-name
+      decription: the key protect instance name
+    - name: cluster-region
+      description: target cluster region
+    - name: cluster-resource-group
+      description: target cluster resource group
+    - name: cluster-name
+      description: the name of the targeted cluster
+    - name: cluster-namespace
+      description: the namespace of the targeted cluster
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: dct-init-and-cise-$(uid)
+      spec:
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
+        params:
+          - name: image-name
+            value: $(params.image-name)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: cluster-region
+            value: $(params.cluster-region)
+          - name: cluster-resource-group
+            value: $(params.cluster-resource-group)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: cluster-namespace
+            value: $(params.cluster-namespace)
+          - name: vault-region
+            value: $(params.vault-region)
+          - name: vault-resource-group
+            value: $(params.vault-resource-group)
+          - name: vault-name
+            value: $(params.vault-name)
+          - name: validation-signer
+            value: $(params.validation-signer)
+          - name: build-signer
+            value: $(params.build-signer)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        pipelineRef:
+          name: dct-pipeline
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: dct-binding
+spec:
+  params:
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: dct-listener
+spec:
+  triggers:
+    - binding:
+        name: dct-binding
+      template:
+        name: dct-template
