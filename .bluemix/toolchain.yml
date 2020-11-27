@@ -125,7 +125,7 @@ services:
         content:
           $text: >
             if ( $env.pipeline_type === 'tekton' ) {
-              if ( $env.env_id === 'ibm:yp:us-south' ) {
+              if ( $env.env_id === 'ibm:yp:us-south' || $env.env_id === 'ibm:yp:au-syd') {
                 "south_pipeline_tekton.yml"
               } else {
                 "pipeline_tekton.yml"
@@ -215,16 +215,15 @@ services:
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
         execute: false
   devops-insights:
-    service_id: >
-      $env.pipeline_type === 'tekton' && $env.env_id === 'ibm:yp:us-south' ? 'draservicebroker' : ''
+      service_id: >
+        $env.env_id === 'ibm:yp:us-south' || $env.env_id === 'ibm:yp:eu-de' || $env.env_id === 'ibm:yp:eu-gb' || $env.env_id === 'ibm:yp:au-syd' ? 'draservicebroker' : ''
   webide:
     service_id: orion
 form:
   pipeline:
     parameters:
       app-name: "{{services.repo.parameters.repo_name}}"
-      prod-cluster-namespace: >
-        $env.pipeline_type === 'tekton' ? 'default' : 'prod'
+      prod-cluster-namespace: prod
       build-cluster-namespace: build
       vault_name: ''
       build_signer: 'devops-build'
