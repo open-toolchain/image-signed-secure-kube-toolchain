@@ -50,9 +50,9 @@ services:
       $env.pipeline_type !== 'tekton' ? '' : $env.source_provider ? $env.source_provider : 'hostedgit'
     parameters:
       repo_name: "image-signed-kube-toolchain-{{timestamp}}"
-      repo_url: >
-        $env.repository
-      type: $env.type || 'clone'
+      repo_url: "https://github.com/open-toolchain/image-signed-secure-kube-toolchain"
+      source_repo_url: "https://github.com/open-toolchain/image-signed-secure-kube-toolchain"
+      type: 'clone'
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
