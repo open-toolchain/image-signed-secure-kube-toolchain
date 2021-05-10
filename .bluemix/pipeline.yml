@@ -201,6 +201,12 @@ stages:
 
       export DCT_DISABLED=false
       source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/build_image_dind.sh")
+      ibmcloud cr image-digests --json --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} | jq -c '.[]' > list
+      TARGET_IMAGE=$(grep -F "${IMAGE_TAG}" list)
+      echo "TARGET_IMAGE $TARGET_IMAGE"
+      DIGEST=$(echo $TARGET_IMAGE | jq -r '.id')
+      echo "DIGEST $DIGEST"
+      echo "IMAGE_MANIFEST_SHA=${DIGEST}" >> $ARCHIVE_DIR/build.properties
 - name: VALIDATE
   inputs:
   - type: job
@@ -362,6 +368,7 @@ stages:
 
       # This script checks the IBM Container Service cluster is ready, has a namespace configured with access to the private
       # image registry (using an IBM Cloud API Key), perform a kubectl deploy of container image and check on outcome.
+      
       source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh")
   - name: Check health
     type: deployer

@@ -1,7 +1,7 @@
 ---
 inputs:
   - type: git
-    branch: dual-template
+    branch: master
     service: ${DCT_PIPELINE_REPO}
     path: .init_dct_pipeline
   - type: git
