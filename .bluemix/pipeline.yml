@@ -207,6 +207,8 @@ stages:
       DIGEST=$(echo $TARGET_IMAGE | jq -r '.id')
       echo "DIGEST $DIGEST"
       echo "IMAGE_MANIFEST_SHA=${DIGEST}" >> $ARCHIVE_DIR/build.properties
+      IMAGE="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}@${DIGEST}"
+      echo "IMAGE=${IMAGE}" >> $ARCHIVE_DIR/build.properties
 - name: VALIDATE
   inputs:
   - type: job
