@@ -101,3 +101,6 @@ properties:
   - name: build-signer
     value: ${BUILD_SIGNER}
     type: text
+  - name: commons-hosted-region
+    value: ${COMMONS_HOSTED_REGION}
+    type: text
