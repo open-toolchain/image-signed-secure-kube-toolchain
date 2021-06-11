@@ -25,6 +25,9 @@ properties:
 - name: VAULT_INSTANCE
   value: ${VAULT_INSTANCE}
   type: text
+- name: COMMONS_HOSTED_REGION
+  value: ${COMMONS_HOSTED_REGION}
+  type: text
 stages:
 - name: Init Docker Content Trust
   properties:
@@ -54,7 +57,13 @@ stages:
     docker_image: ibmcom/pipeline-base-image:latest
     script: |
       #!/bin/bash
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
+      if [ "${COMMONS_HOSTED_REGION}" ]; then
+        echo "RUNNING HOSTED"
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/add_docker.sh")
+      else
+        echo "RUNNING DEFAULT"
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
+      fi
       # Get the notary binary
       curl -L https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -o /usr/local/bin/notary
       # Make it executable
@@ -65,7 +74,13 @@ stages:
 
       # Setup Docker-In-Docker
       source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
-
+      if [ "${COMMONS_HOSTED_REGION}" ]; then
+        echo "RUNNING HOSTED"
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/setup_dind.sh")
+      else
+        echo "RUNNING DEFAULT"
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/setup_dind.sh")
+      fi
       # configure the container registry
       echo "REGISTRY REGION $REGISTRY_REGION"
       export REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
@@ -91,8 +106,16 @@ stages:
       fi
 
       export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/check_signers.sh")
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
+
+      if [ "${COMMONS_HOSTED_REGION}" ]; then
+        echo "RUNNING HOSTED"
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/check_signers.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/signing_utils.sh")
+      else
+        echo "RUNNING DEFAULT"
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/check_signers.sh")
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
+      fi
       if [ $(findTrustData "$GUN") == "false" ]; then
         echo "NO TRUST DATA FOUND"
         # Initialize the repository for Docker Content Trust
@@ -105,8 +128,13 @@ stages:
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(openssl rand -base64 16)
         fi
         echo "Doing Docker Content Trust initialization for GUN $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/notary_init_gun.sh")
-
+        if [ "${COMMONS_HOSTED_REGION}" ]; then
+          echo "RUNNING HOSTED"
+          source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/notary_init_gun.sh")
+        else
+          echo "RUNNING DEFAULT"
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/notary_init_gun.sh")
+        fi
         
         echo "Backing-up keys in $VAULT_INSTANCE"
         # jsonify the Vault access values
@@ -131,7 +159,13 @@ stages:
         DEVOPS_SIGNER=$i
         # Restore root & repository keys
         echo "Restoring keys from $VAULT_INSTANCE"
-        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
+        if [ "${COMMONS_HOSTED_REGION}" ]; then
+          echo "RUNNING HOSTED"
+          source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/add_signer.sh")
+        else
+          echo "RUNNING DEFAULT"
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
+        fi
       done
 - name: Setup IKS Runtime enforcement in deployment cluster
   inputs:
@@ -165,8 +199,13 @@ stages:
       #!/bin/bash
       #set -x
 
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
-
+      if [ "${COMMONS_HOSTED_REGION}" ]; then
+          echo "RUNNING HOSTED"
+          source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/check_helm_up_and_running.sh")
+      else
+        echo "RUNNING DEFAULT"
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
+      fi
       # Install CISE
       if helm list cise | grep '^cise'; then
         echo "Container Image Security Enforcement is already installed"
@@ -188,6 +227,13 @@ stages:
         DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
 
         source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
+        if [ "${COMMONS_HOSTED_REGION}" ]; then
+          echo "RUNNING HOSTED"
+          source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/create_cise_crd.sh")
+        else
+          echo "RUNNING DEFAULT"
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
+        fi
         createCISE_CRD | tee cise_crd_custom_policy.yaml
 
         echo " "

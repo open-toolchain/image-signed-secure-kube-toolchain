@@ -209,7 +209,7 @@ stages:
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
       
       if [ "${COMMONS_HOSTED_REGION}" ]; then
-        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/signing_utils.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/signing_utils.sh")
       else
         source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
       fi
@@ -223,7 +223,7 @@ stages:
 
       export DCT_DISABLED=false
       if [ "${COMMONS_HOSTED_REGION}" ]; then
-        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/build_image_dind.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/build_image_dind.sh")
       else
         source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/build_image_dind.sh")
       fi
@@ -298,7 +298,7 @@ stages:
         export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
       fi
       if [ "${COMMONS_HOSTED_REGION}" ]; then
-        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/add_docker.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/add_docker.sh")
         source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/setup_dind.sh")
       else
         source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
@@ -314,10 +314,10 @@ stages:
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
       if [ "${COMMONS_HOSTED_REGION}" ]; then
         echo "RUNNING HOSTED"
-        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/sign_image_with_vault_keys.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/sign_image_with_vault_keys.sh")
       else
         echo "RUNNING DEFAULT"
-        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/sign_image_with_vault_keys.sh")
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/sign_image_with_vault_keys.sh")
       fi
 - name: DEPLOY
   inputs:
@@ -368,7 +368,7 @@ stages:
       # set -x
       # This script inspect the docker image signatures to ensure compliance
       if [ "${COMMONS_HOSTED_REGION}" ]; then
-        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/add_docker.sh")
+        source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/image_signing/add_docker.sh")
         source <(curl -sSL "https://${COMMONS_HOSTED_REGION}.git.cloud.ibm.com/huayuenh/commons/-/raw/master/scripts/setup_dind.sh")
       else
         source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
