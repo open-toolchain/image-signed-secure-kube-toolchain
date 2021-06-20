@@ -1,7 +1,7 @@
 ---
 inputs:
   - type: git
-    branch: ${APP_REPO_BRANCH}
+    branch: ${PIPELINE_REPO_BRANCH}
     service: ${DCT_PIPELINE_REPO}
     path: .init_dct_pipeline
   - type: git

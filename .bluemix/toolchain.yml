@@ -262,6 +262,9 @@ services:
             $env.template.info.hosted_region !== "" ? 'main': 'master'
           APP_REPO_BRANCH: >
             $env.template.info.hosted_region !== "" ? 'main': 'master'
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : 
+            $env.template.info.hosted_region !== "" ? 'main': 'master'
         execute: false
   devops-insights:
       service_id: draservicebroker
