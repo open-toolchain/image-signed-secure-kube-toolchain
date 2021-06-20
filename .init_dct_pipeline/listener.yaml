@@ -32,6 +32,8 @@ spec:
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
