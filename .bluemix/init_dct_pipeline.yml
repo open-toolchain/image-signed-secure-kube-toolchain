@@ -68,7 +68,7 @@ stages:
       export DOCKER_CONTENT_TRUST=1
 
       # Setup Docker-In-Docker
-      source <(curl -sSL "COMMONS_HOSTED_REGION/scripts/image_signing/setup_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/setup_dind.sh")
       # configure the container registry
       echo "REGISTRY REGION $REGISTRY_REGION"
       export REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
