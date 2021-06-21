@@ -1,17 +1,21 @@
 ---
 inputs:
   - type: git
-    branch: master
+    branch: ${PIPELINE_REPO_BRANCH}
     service: ${DCT_PIPELINE_REPO}
     path: .init_dct_pipeline
   - type: git
-    branch: master
+    branch: ${DEFINITIONS_BRANCH}
     service: ${TEKTON_CATALOG_REPO}
     path: signing/dct
 triggers:
   - type: manual
     name: initialize-dct-and-cise
     eventListener: dct-listener
+    properties:
+      - name: branch
+        type: text
+        value: ${APP_REPO_BRANCH}
 properties:
   - name: apikey
     value: ${API_KEY}
@@ -51,4 +55,7 @@ properties:
     type: text
   - name: build-signer
     value: ${BUILD_SIGNER}
+    type: text
+  - name: commons-hosted-region
+    value: ${COMMONS_HOSTED_REGION}
     type: text

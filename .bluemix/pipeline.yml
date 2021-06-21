@@ -13,6 +13,10 @@ properties:
 - name: VAULT_INSTANCE
   value: ${VAULT_INSTANCE}
   type: text
+- name: COMMONS_HOSTED_REGION
+  value: ${COMMONS_HOSTED_REGION}
+  type: text
+  default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
 stages:
 - name: BUILD
   inputs:
@@ -138,12 +142,11 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/check_dockerfile.sh) and 'source' it from your pipeline job
       #    source ./scripts/check_prebuild.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh")
+      #    source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_dockerfile.sh")
       # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh
 
       # This script lints Dockerfile.
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_dockerfile.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_dockerfile.sh")
   - name: Check registry
     type: builder
     build_type: cr
@@ -160,12 +163,11 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/check_registry.sh) and 'source' it from your pipeline job
       #    source ./scripts/check_registry.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh")
+      #    source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_registry.sh")
       # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh
 
       # This script checks presence of registry namespace.
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_registry.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_registry.sh")
   - name: Build Signed Docker image
     type: builder
     curatedDockerImage: default
@@ -178,8 +180,9 @@ stages:
         # if vault region is in the 'ibm:yp:<region>' just keep the region part
         export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
       fi
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/add_docker.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
+      
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -190,7 +193,8 @@ stages:
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
+
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/signing_utils.sh")
       # Restore repository pem key and signer pem key
       VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
       JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
@@ -200,7 +204,7 @@ stages:
       export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
       export DCT_DISABLED=false
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/build_image_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/build_image_dind.sh")
       ibmcloud cr image-digests --json --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} | jq -c '.[]' > list
       TARGET_IMAGE=$(grep -F "${IMAGE_TAG}" list)
       echo "TARGET_IMAGE $TARGET_IMAGE"
@@ -251,7 +255,7 @@ stages:
       # PIPELINE_IMAGE_URL is defined because of tester type VA and use_image_from_build_input: true
       # unset it in order to recompute using build.properties value
       unset PIPELINE_IMAGE_URL
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_vulnerabilities.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_vulnerabilities.sh")
   - name: Sign Image for Validation
     type: tester
     test_type: customimage
@@ -265,8 +269,8 @@ stages:
         # if vault region is in the 'ibm:yp:<region>' just keep the region part
         export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
       fi
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/add_docker.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -275,8 +279,7 @@ stages:
       # Initialize the REGISTRY_URL and DOCKER_CONTENT_TRUST_SERVER
       export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
-      
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/sign_image_with_vault_keys.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/sign_image_with_vault_keys.sh")
 - name: DEPLOY
   inputs:
   - type: job
@@ -325,8 +328,7 @@ stages:
       # uncomment to debug the script
       # set -x
       # This script inspect the docker image signatures to ensure compliance
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
-      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/setup_dind.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -364,14 +366,13 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/check_predeploy.sh) and 'source' it from your pipeline job
       #    source ./scripts/check_predeploy_kubectl.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh")
+      #    source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_and_deploy_kubectl.sh")
       # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh
 
       # This script checks the IBM Container Service cluster is ready, has a namespace configured with access to the private
       # image registry (using an IBM Cloud API Key), perform a kubectl deploy of container image and check on outcome.
-      
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_kubectl.sh")
+
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_and_deploy_kubectl.sh")
   - name: Check health
     type: deployer
     target:
@@ -386,8 +387,7 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/check_health.sh) and 'source' it from your pipeline job
       #    source ./scripts/check_health.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+      #    source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_health.sh")
       # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
       # Check liveness and readiness probes to confirm application is healthy
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/check_health.sh")
