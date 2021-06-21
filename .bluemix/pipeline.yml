@@ -194,7 +194,7 @@ stages:
 
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
 
-      source <(curl -sSL "${COMMONS_HOSTED_REGION}/image_signing/signing_utils.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/signing_utils.sh")
       # Restore repository pem key and signer pem key
       VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
       JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
