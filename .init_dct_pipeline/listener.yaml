@@ -82,6 +82,8 @@ spec:
             value: $(params.build-signer)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+          - name: commons-hosted-region
+            value: $(params.commons-hosted-region)
         pipelineRef:
           name: dct-pipeline
 ---

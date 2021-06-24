@@ -173,6 +173,10 @@ services:
           REGISTRY_REGION_ID: "{{form.pipeline.parameters.registry-region}}"
           REGISTRY_NAMESPACE: "{{form.pipeline.parameters.registry-namespace}}"
           API_KEY: "{{form.pipeline.parameters.api-key}}"
+          BUILD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          BUILD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
+          BUILD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
+          BUILD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.build-cluster-namespace}}'
           PROD_REGION_ID: "{{form.pipeline.parameters.prod-region}}"
           PROD_RESOURCE_GROUP: "{{form.pipeline.parameters.prod-resource-group}}"
           PROD_CLUSTER_NAME: "{{form.pipeline.parameters.prod-cluster-name}}"

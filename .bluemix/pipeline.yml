@@ -181,7 +181,7 @@ stages:
         export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
       fi
       source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/add_docker.sh")
-      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/image_signing/setup_dindv2.sh")
       
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
@@ -193,7 +193,6 @@ stages:
       export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
-
       source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/signing_utils.sh")
       # Restore repository pem key and signer pem key
       VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
@@ -204,7 +203,7 @@ stages:
       export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
       export DCT_DISABLED=false
-      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/build_image_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/build_image_dind.sh")
       ibmcloud cr image-digests --json --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} | jq -c '.[]' > list
       TARGET_IMAGE=$(grep -F "${IMAGE_TAG}" list)
       echo "TARGET_IMAGE $TARGET_IMAGE"
@@ -270,7 +269,7 @@ stages:
         export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
       fi
       source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/add_docker.sh")
-      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/image_signing/setup_dindv2.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION
@@ -328,7 +327,8 @@ stages:
       # uncomment to debug the script
       # set -x
       # This script inspect the docker image signatures to ensure compliance
-      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/setup_dind.sh")
+      source <(curl -sSL "${COMMONS_HOSTED_REGION}/scripts/image_signing/add_docker.sh")
+      source <(curl -s -S -L "${COMMONS_HOSTED_REGION}/scripts/image_signing/setup_dindv2.sh")
       # configure the container registry
       REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
       ibmcloud cr region-set $REGISTRY_REGION

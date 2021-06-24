@@ -347,6 +347,8 @@ spec:
           value: $(params.vault-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)
     - name: vulnerability-advisor
       runAfter:
         - containerize
@@ -416,6 +418,8 @@ spec:
           value: $(params.vault-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: commons-hosted-region
+          value: $(params.commons-hosted-region)
     - name: deploy-to-kubernetes
       taskRef:
         name: iks-deploy-to-kubernetes
