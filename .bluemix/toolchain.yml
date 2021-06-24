@@ -24,7 +24,7 @@ template:
       "[" + $env.branch + "]" +
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
-    hosted_region: ""
+    hosted_region: "mon01"
 toolchain:
   name: "image-signed-kube-toolchain-{{timestamp}}"
   template:
