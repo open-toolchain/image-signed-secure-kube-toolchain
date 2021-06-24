@@ -1,7 +1,7 @@
 ---
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "开发具有映像签名的 Kubernetes 应用程序"
-template.description: "通过此工具链，您可以开发应用程序并将其安全地部署到 IBM Cloud Kubernetes Service 管理的 Kubernetes 集群中。此工具链需要预配置的密钥，这些密钥可使用 [Key-Management-Admin-Template](https://github.com/open-toolchain/key-management-admin-toolchain) 进行设置。缺省情况下，此工具链使用样本 Node.js“Hello World”应用程序，但您可以改为链接到自己的 GitHub 存储库。此工具链预先配置有 Docker 映像签名和对 Kubernetes 集群的签名检查策略，支持持续交付、[Vulnerability Advisor](https://cloud.ibm.com/docs/services/va?topic=va-va_index)、源代码控制、问题跟踪和联机编辑。\n\n您可以在[控制台](https://cloud.ibm.com/kubernetes/clusters)中管理 IBM Cloud Container 集群。\n\n此工具链使用了作为 Continuous Delivery 服务的一部分的工具。如果在所选资源组或组织中尚未有该服务的实例，那么单击**创建**时，会自动使用所选的免费[轻量](/catalog/services/continuous-delivery/)套餐添加该实例。\n\n首先，请单击**创建**。\n\n有关逐步指示信息，请参阅[教程](https://www.ibm.com/cloud/architecture/tutorials/develop-a-kubernetes-app-with-secure-image-signing)。"
+template.description: "通过此工具链，您可以开发应用程序并将其安全地部署到 IBM Cloud Kubernetes Service 管理的 Kubernetes 集群中。此工具链需要预配置的密钥，这些密钥可使用 [Key-Management-Admin-Template](https://us-south.git.cloud.ibm.com/open-toolchain/key-management-admin-toolchain) 进行设置。缺省情况下，此工具链使用样本 Node.js“Hello World”应用程序，但您可以改为链接到自己的 GitHub 存储库。此工具链预先配置有 Docker 映像签名和对 Kubernetes 集群的签名检查策略，支持持续交付、[Vulnerability Advisor](https://cloud.ibm.com/docs/services/va?topic=va-va_index)、源代码控制、问题跟踪和联机编辑。\n\n您可以在[控制台](https://cloud.ibm.com/kubernetes/clusters)中管理 IBM Cloud Container 集群。\n\n此工具链使用了作为 Continuous Delivery 服务的一部分的工具。如果在所选资源组或组织中尚未有该服务的实例，那么单击**创建**时，会自动使用所选的免费[轻量](/catalog/services/continuous-delivery/)套餐添加该实例。\n\n首先，请单击**创建**。\n\n有关逐步指示信息，请参阅[教程](https://www.ibm.com/cloud/architecture/tutorials/develop-a-kubernetes-app-with-secure-image-signing)。"
 template.gettingStarted: " **工具链已就绪！**\n**快速启动：** 将更改提交到 Git 存储库以触发新的 Docker 映像构建，系统将会对其进行扫描以查看是否存在漏洞，并在 Kubernetes 集群中对其进行部署。有关逐步指示信息，请参阅此工具链的[教程](https://www.ibm.com/cloud/architecture/tutorials/develop-a-kubernetes-app-with-secure-image-signing)。"
 deploy.title: "Hello World 部署阶段"
 deploy.description: "Hello World 简单工具链"
@@ -30,7 +30,7 @@ deploy.buildclusterNs: "构建集群名称空间"
 deploy.clusterDescription: "使用 CLI 命令“ibmcloud ks clusters”或通过[控制台](https://cloud.ibm.com/kubernetes/clusters)检索 Kubernetes 集群名称。"
 deploy.clusternsDescription: "如果集群名称空间尚不存在，那么系统将自动创建和配置一个集群名称空间。"
 deploy.keyCreation: "生成签名密钥"
-deploy.keyDetails: "指定 Key Protect 实例名称，其中存储了映像签名密钥。构建和验证签署者字段包含这些签署者的缺省名称。这些值必须与 Key-Management-Admin-Template 中创建的值匹配。请参阅 https://github.com/open-toolchain/key-management-admin-toolchain"
+deploy.keyDetails: "指定 Key Protect 实例名称，其中存储了映像签名密钥。构建和验证签署者字段包含这些签署者的缺省名称。这些值必须与 Key-Management-Admin-Template 中创建的值匹配。请参阅 https://us-south.git.cloud.ibm.com/open-toolchain/key-management-admin-toolchain"
 deploy.vaultregionDescription: "Key Protect 实例的 IBM Cloud 区域"
 deploy.vaultrgDescription: "Key Protect 实例的 IBM Cloud 资源组"
 deploy.vaultName: "Key Protect 保险库实例名称"

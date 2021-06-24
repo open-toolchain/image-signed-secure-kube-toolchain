@@ -30,7 +30,7 @@ deploy.buildclusterNs: "[G'Ｂｕｉｌｄ Ｃｌｕster namespaceฏูİı｜]
 deploy.clusterDescription: "[G'Ｒｅｔｒｉｅｖｅ ｔｈｅ Ｋｕｂｅｒｎｅｔｅｓ ｃｌｕｓｔｅｒ ｎａｍｅ ｗｉth the CLI command 'ibmcloud ks clusters' or via the [console](https://cloud.ibm.com/kubernetes/clusters).ฏูİı｜]"
 deploy.clusternsDescription: "[G'Ｉｆ ｔｈｅ ｃｌｕｓｔｅｒ ｎａｍｅｓｐａce doesn't exist already, it will be automatically created and configured.ฏูİı｜]"
 deploy.keyCreation: "[G'Ｇｅｎｅｒａｔe Signing Keysฏูİı｜]"
-deploy.keyDetails: "[G'Ｓｐｅｃｉｆｙ ｔｈｅ Ｋｅｙ Ｐｒｏｔｅｃｔ ｉｎｓｔａｎｃｅ ｎａｍｅ, ｗｈｅｒｅ ｔｈｅ ｉｍａｇｅ ｓｉｇｎｉｎｇ ｋｅｙｓ ｈａｖｅ ｂｅｅｎ ｓｔｏｒｅｄ. Ｔｈｅ ｂｕｉｌｄ ａｎｄ ｖａｌidation signer fields contain default names for these signers. The values must match the values created in the Key-Management-Admin-Template. See https://github.com/open-toolchain/key-management-admin-toolchainฏูİı｜]"
+deploy.keyDetails: "[G'Ｓｐｅｃｉｆｙ ｔｈｅ Ｋｅｙ Ｐｒｏｔｅｃｔ ｉｎｓｔａｎｃｅ ｎａｍｅ, ｗｈｅｒｅ ｔｈｅ ｉｍａｇｅ ｓｉｇｎｉｎｇ ｋｅｙｓ ｈａｖｅ ｂｅｅｎ ｓｔｏｒｅｄ. Ｔｈｅ ｂｕｉｌｄ ａｎｄ ｖａｌidation signer fields contain default names for these signers. The values must match the values created in the Key-Management-Admin-Template. See https://us-south.git.cloud.ibm.com/open-toolchain/key-management-admin-toolchainฏูİı｜]"
 deploy.vaultregionDescription: "[G'Ｔｈｅ ＩＢＭ Ｃｌｏｕｄ region for Key Protect instanceฏูİı｜]"
 deploy.vaultrgDescription: "[G'Ｔｈｅ ＩＢＭ Ｃｌｏｕｄ ｒesource group for Key Protect instanceฏูİı｜]"
 deploy.vaultName: "[G'Ｋｅｙ Ｐｒｏｔｅｃt Vault Instance nameฏูİı｜]"
