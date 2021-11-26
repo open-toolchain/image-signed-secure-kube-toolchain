@@ -1,4 +1,5 @@
-
+# This template has been deprecated and is no longer supported.
+## Please see the "CI - Develop a secure app with DevSecOps practices" template for an alternative template with signing.
 # ![Icon](./.bluemix/secure-lock-kubernetes.png) Develop a Kubernetes app
 
 ### Leverages Docker image signing to validate image integrity
