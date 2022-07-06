@@ -264,8 +264,6 @@ services:
         execute: false
   devops-insights:
       service_id: draservicebroker
-  webide:
-    service_id: orion
 form:
   pipeline:
     parameters:
